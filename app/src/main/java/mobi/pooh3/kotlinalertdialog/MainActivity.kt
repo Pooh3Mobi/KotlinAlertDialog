@@ -1,7 +1,9 @@
 package mobi.pooh3.kotlinalertdialog
 
+import android.content.Context
 import android.os.Bundle
 import android.support.design.widget.Snackbar
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
@@ -16,43 +18,30 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         fab.setOnClickListener { view ->
-
-            showAlert(
-                    ttlTxt = "this is title",
-                    msgTxt = "this is message",
-                    posTxt = "agree!",
-                    posAct = {
+            alert {
+                title {
+                    label("this is title")
+                }
+                message {
+                    label("this is message")
+                }
+                positive {
+                    label("agree!") {
 
                         Snackbar.make(view, "you chose positive action", Snackbar.LENGTH_LONG)
                                 .setAction("Action", null).show()
 
-                    },
-                    negTxt = "deny!",
-                    negAct = {
+                    }
+                }
+                negative {
+                    label("deny!") {
 
                         Snackbar.make(view, "you chose negative action", Snackbar.LENGTH_LONG)
                                 .setAction("Action", null).show()
 
                     }
-            )
-
-        }
-    }
-}
-
-fun showAlert(ttlTxt: String, msgTxt: String, posTxt: String, posAct: () -> Unit, negTxt: String, negAct: () -> Unit) {
-    alert {
-        title {
-            label(ttlTxt)
-        }
-        message {
-            label(msgTxt)
-        }
-        positive {
-            label(posTxt){ posAct() }
-        }
-        negative {
-            label(negTxt){ negAct() }
+                }
+            }.build(this).show()
         }
     }
 }
@@ -64,26 +53,43 @@ fun alert(init: Alert.() -> Unit): Alert {
 }
 
 class Alert {
+    val components =arrayListOf<TextComponent>()
     fun title(init: Title.() -> Unit): Title {
         val title = Title()
+        components.add(title)
         title.init()
         return title
     }
     fun message(init: Message.() -> Unit): Message {
         val message = Message()
+        components.add(message)
         message.init()
         return message
     }
     fun positive(init: PositiveButton.() -> Unit): PositiveButton {
         val posBtn = PositiveButton()
+        components.add(posBtn)
         posBtn.init()
         return posBtn
     }
     fun negative(init: NegativeButton.() ->Unit): NegativeButton {
         val negBtn = NegativeButton()
+        components.add(negBtn)
         negBtn.init()
         return negBtn
     }
+    fun build(context: Context): AlertDialog =
+            with(AlertDialog.Builder(context)) {
+                for (c in components) {
+                    when (c) {
+                        is Title -> this.setTitle(c.text)
+                        is Message -> this.setMessage(c.text)
+                        is PositiveButton -> this.setPositiveButton(c.text, { _, _ -> c.action() })
+                        is NegativeButton -> this.setNegativeButton(c.text, { _, _ -> c.action() })
+                    }
+                }
+                this.create()
+            }
 }
 
 abstract class TextComponent {
