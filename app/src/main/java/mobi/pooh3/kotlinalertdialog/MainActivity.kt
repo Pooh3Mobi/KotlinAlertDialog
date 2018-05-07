@@ -19,32 +19,30 @@ class MainActivity : AppCompatActivity() {
 
         fab.setOnClickListener { view ->
             alert {
-                title {
-                    label("this is title")
+                title    { + "this is title" }
+                message  { + "this is message" }
+                positive { + "agree!" +
+                        {
+
+                            Snackbar.make(view, "you chose positive action", Snackbar.LENGTH_LONG)
+                                    .setAction("Action", null).show()
+
+                        }
                 }
-                message {
-                    label("this is message")
-                }
-                positive {
-                    label("agree!") {
+                negative { + "deny!" +
+                        {
 
-                        Snackbar.make(view, "you chose positive action", Snackbar.LENGTH_LONG)
-                                .setAction("Action", null).show()
+                            Snackbar.make(view, "you chose negative action", Snackbar.LENGTH_LONG)
+                                    .setAction("Action", null).show()
 
-                    }
-                }
-                negative {
-                    label("deny!") {
-
-                        Snackbar.make(view, "you chose negative action", Snackbar.LENGTH_LONG)
-                                .setAction("Action", null).show()
-
-                    }
+                        }
                 }
             }.build(this).show()
         }
     }
 }
+
+
 
 fun alert(init: Alert.() -> Unit): Alert {
     val alert = Alert()
@@ -94,18 +92,16 @@ class Alert {
 
 abstract class TextComponent {
     lateinit var text: String
-}
-fun TextComponent.label(text: String) {
-    this.text = text
+    operator fun String.unaryPlus() {
+        this@TextComponent.text = this
+    }
 }
 
 abstract class ButtonComponent: TextComponent() {
     lateinit var action: () -> Unit
-
-}
-fun ButtonComponent.label(text: String, action: () -> Unit) {
-    this.text = text
-    this.action = action
+    operator fun Unit.plus(action: () -> Unit) {
+        this@ButtonComponent.action = action
+    }
 }
 class Title: TextComponent()
 class Message: TextComponent()
