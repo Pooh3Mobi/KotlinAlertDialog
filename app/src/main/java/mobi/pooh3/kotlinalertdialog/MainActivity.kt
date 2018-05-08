@@ -5,8 +5,6 @@ import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
-import android.view.Menu
-import android.view.MenuItem
 
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -37,21 +35,21 @@ class MainActivity : AppCompatActivity() {
 
                         }
                 }
-            }.build(this).show()
+            }.show()
         }
     }
 }
 
 
 
-fun alert(init: Alert.() -> Unit): Alert {
-    val alert = Alert()
+fun Context.alert(init: Alert.() -> Unit): Alert {
+    val alert = Alert(this)
     alert.init()
     return alert
 }
 
-class Alert {
-    val components =arrayListOf<TextComponent>()
+class Alert(private val context: Context) {
+    private val components = arrayListOf<TextComponent>()
     fun title(init: Title.() -> Unit): Title {
         val title = Title()
         components.add(title)
@@ -76,7 +74,7 @@ class Alert {
         negBtn.init()
         return negBtn
     }
-    fun build(context: Context): AlertDialog =
+    fun show() =
             with(AlertDialog.Builder(context)) {
                 for (c in components) {
                     when (c) {
@@ -86,7 +84,7 @@ class Alert {
                         is NegativeButton -> this.setNegativeButton(c.text, { _, _ -> c.action() })
                     }
                 }
-                this.create()
+                this.create().show()
             }
 }
 
