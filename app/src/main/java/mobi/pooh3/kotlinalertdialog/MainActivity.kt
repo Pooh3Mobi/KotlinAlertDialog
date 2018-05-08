@@ -75,17 +75,18 @@ class Alert(private val context: Context) {
         return negBtn
     }
     fun show() =
-            with(AlertDialog.Builder(context)) {
-                for (c in components) {
-                    when (c) {
-                        is Title -> this.setTitle(c.text)
-                        is Message -> this.setMessage(c.text)
-                        is PositiveButton -> this.setPositiveButton(c.text, { _, _ -> c.action() })
-                        is NegativeButton -> this.setNegativeButton(c.text, { _, _ -> c.action() })
+            let { AlertDialog.Builder(context) }
+                    .apply {
+                        for (c in components) {
+                            when (c) {
+                                is Title -> setTitle(c.text)
+                                is Message -> setMessage(c.text)
+                                is PositiveButton -> setPositiveButton(c.text, { _, _ -> c.action() })
+                                is NegativeButton -> setNegativeButton(c.text, { _, _ -> c.action() })
+                            }
+                        }
                     }
-                }
-                this.create().show()
-            }
+                    .run { create().show() }
 }
 
 abstract class TextComponent {
