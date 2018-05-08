@@ -16,7 +16,7 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         fab.setOnClickListener { view ->
-            alert {
+            alert(cancelable = false) {
                 title    { + "this is title" }
                 message  { + "this is message" }
                 positive { + "agree!" +
@@ -42,13 +42,13 @@ class MainActivity : AppCompatActivity() {
 
 
 
-fun Context.alert(init: Alert.() -> Unit): Alert {
+fun Context.alert(cancelable: Boolean, init: Alert.() -> Unit): Alert {
     val alert = Alert(this)
     alert.init()
     return alert
 }
 
-class Alert(private val context: Context) {
+class Alert(private val context: Context, private val cancelable: Boolean = true) {
     private val components = arrayListOf<TextComponent>()
     fun title(init: Title.() -> Unit): Title {
         val title = Title()
@@ -77,6 +77,7 @@ class Alert(private val context: Context) {
     fun show() =
             let { AlertDialog.Builder(context) }
                     .apply {
+                        setCancelable(cancelable)
                         for (c in components) {
                             when (c) {
                                 is Title -> setTitle(c.text)
