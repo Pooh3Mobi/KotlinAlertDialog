@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
 
 
 fun Context.alert(cancelable: Boolean, init: Alert.() -> Unit): Alert {
-    val alert = Alert(this)
+    val alert = Alert(context = this, cancelable = cancelable)
     alert.init()
     return alert
 }
