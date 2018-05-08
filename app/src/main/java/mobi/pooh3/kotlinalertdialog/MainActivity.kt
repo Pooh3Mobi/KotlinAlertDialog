@@ -92,6 +92,7 @@ class Alert(private val context: Context, private val cancelable: Boolean = true
 
 abstract class TextComponent {
     lateinit var text: String
+        private set
     operator fun String.unaryPlus() {
         this@TextComponent.text = this
     }
@@ -99,6 +100,7 @@ abstract class TextComponent {
 
 abstract class ButtonComponent: TextComponent() {
     lateinit var action: () -> Unit
+        private set
     operator fun Unit.plus(action: () -> Unit) {
         this@ButtonComponent.action = action
     }
