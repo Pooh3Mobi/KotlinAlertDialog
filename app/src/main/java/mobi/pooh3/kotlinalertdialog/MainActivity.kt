@@ -19,21 +19,20 @@ class MainActivity : AppCompatActivity() {
             alert(cancelable = false) {
                 title    { + "this is title" }
                 message  { + "this is message" }
-                positive { + "agree!" +
-                        {
-
-                            Snackbar.make(view, "you chose positive action", Snackbar.LENGTH_LONG)
+                positive {
+                    + "agree!"
+                    action {
+                        Snackbar.make(view, "you chose positive action", Snackbar.LENGTH_LONG)
                                     .setAction("Action", null).show()
-
-                        }
+                    }
                 }
-                negative { + "deny!" +
-                        {
-
-                            Snackbar.make(view, "you chose negative action", Snackbar.LENGTH_LONG)
+                negative {
+                    + "deny!"
+                    action {
+                        Snackbar.make(view, "you chose negative action", Snackbar.LENGTH_LONG)
                                     .setAction("Action", null).show()
 
-                        }
+                    }
                 }
             }.show()
         }
@@ -75,19 +74,18 @@ class Alert(private val context: Context, private val cancelable: Boolean = true
         return negBtn
     }
     fun show() =
-            let { AlertDialog.Builder(context) }
-                    .apply {
-                        setCancelable(cancelable)
-                        for (c in components) {
-                            when (c) {
-                                is Title -> setTitle(c.text)
-                                is Message -> setMessage(c.text)
-                                is PositiveButton -> setPositiveButton(c.text, { _, _ -> c.action() })
-                                is NegativeButton -> setNegativeButton(c.text, { _, _ -> c.action() })
-                            }
-                        }
+            with(AlertDialog.Builder(context)) {
+                setCancelable(cancelable)
+                for (c in components) {
+                    when (c) {
+                        is Title -> setTitle(c.text)
+                        is Message -> setMessage(c.text)
+                        is PositiveButton -> setPositiveButton(c.text, { _, _ -> c.action() })
+                        is NegativeButton -> setNegativeButton(c.text, { _, _ -> c.action() })
                     }
-                    .run { create().show() }
+                }
+                create().show()
+            }
 }
 
 abstract class TextComponent {
@@ -101,7 +99,7 @@ abstract class TextComponent {
 abstract class ButtonComponent: TextComponent() {
     lateinit var action: () -> Unit
         private set
-    operator fun Unit.plus(action: () -> Unit) {
+    fun action(action: () -> Unit) {
         this@ButtonComponent.action = action
     }
 }
